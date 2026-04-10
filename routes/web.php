@@ -18,6 +18,7 @@ Route::get('/bantuan', function () {
     return view('bantuan');
 });
 
+
 // Rute tambahan agar link Kontak di menu navigasi tidak error
 Route::get('/kontak', function () {
     return view('kontak');

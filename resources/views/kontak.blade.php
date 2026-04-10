@@ -21,5 +21,6 @@
         <p class="text-gray-600 mb-6">Punya pertanyaan lebih lanjut? Kirimkan pesan melalui email ke: <br><strong class="text-indigo-600">dimasmrofiq@amikomeventhub.id</strong></p>
     </div>
 
+    
 </body>
 </html>
