@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 // Import semua model yang digunakan di sini
-use App\Models\user;
+use App\Models\User;
 use App\Models\category;
 use App\Models\event;
 
