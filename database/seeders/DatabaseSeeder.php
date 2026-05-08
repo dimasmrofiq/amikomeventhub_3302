@@ -2,7 +2,11 @@
 
 namespace Database\Seeders;
 
+// Import semua model yang digunakan di sini
 use App\Models\User;
+use App\Models\Category;
+use App\Models\Event;
+
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -15,8 +19,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Akun Admin Utama (Menggunakan firstOrCreate agar tidak bentrok jika dijalankan ulang)
-        \App\Models\User::firstOrCreate(
+        // 1. Akun Admin Utama (Menggunakan firstOrCreate agar tidak bentrok)
+        User::firstOrCreate(
             ['email' => 'admin@amikom.ac.id'], // Cari berdasarkan email ini
             [
                 'name' => 'Admin Amikom',
@@ -26,18 +30,19 @@ class DatabaseSeeder extends Seeder
         );
             
         // 2. Insert Kategori Event
-        $category = \App\Models\Category::create([
-            'name' => 'Seminar IT',
-            'slug' => 'seminar-it',
-        ]);
+        // Saya ubah keduanya pakai firstOrCreate biar aman kalau di-seed ulang
+        $category = Category::firstOrCreate(
+            ['slug' => 'seminar-it'],
+            ['name' => 'Seminar IT']
+        );
                 
-        $category2 = \App\Models\Category::firstOrCreate([
-            'name' => 'Entertaiment',
-            'slug' => 'entertaiment',
-        ]);
+        $category2 = Category::firstOrCreate(
+            ['slug' => 'entertaiment'],
+            ['name' => 'Entertaiment']
+        );
             
         // 3. Insert Sampel Events
-        \App\Models\Event::create([
+        Event::create([
             'category_id' => $category2->id,
             'title' => 'Jazz Night 2025',
             'description' => 'Nikmati malam yang indah dengan alunan musik jazz yang merdu.',
@@ -48,7 +53,7 @@ class DatabaseSeeder extends Seeder
             'poster_path' => 'posters/event-1.png',
         ]);
             
-        \App\Models\Event::create([
+        Event::create([
             'category_id' => $category->id,
             'title' => 'Hackaton - Unleash Your Inner Developer',
             'description' => 'Ayo asah skill coding kamu dan ciptakan solusi inovatif untuk tantangan masa depan!',
@@ -59,7 +64,7 @@ class DatabaseSeeder extends Seeder
             'poster_path' => 'posters/event-2.png',
         ]);
                     
-        \App\Models\Event::create([
+        Event::create([
             'category_id' => $category->id,
             'title' => 'AI & FUTURE TECH SUMMIT 2026',
             'description' => 'Jelajahi tren terkini dalam kecerdasan buatan dan teknologi masa depan bersama para ahli di bidangnya.',
