@@ -17,4 +17,9 @@ class EventController extends Controller
     {
         return view('checkout');
     }
+    
+    protected $fillable = [
+        'category_id', 'title', 'description', 'date', 
+        'location', 'price', 'stock', 'poster_path'
+    ];
 }
