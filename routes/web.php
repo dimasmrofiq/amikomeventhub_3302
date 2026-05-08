@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\EventController as EventAdminController;
 
 // ==========================================
 // RUTE PUBLIK (HALAMAN DEPAN)
@@ -16,13 +17,26 @@ Route::get('/checkout', function () { return view('checkout'); })->name('checkou
 Route::get('/ticket', function () { return view('ticket'); })->name('ticket');
 
 // ==========================================
-// RUTE ADMIN
+// RUTE ADMIN (DIGABUNG)
 // ==========================================
-Route::group(['prefix' => 'admin', 'as' => 'admin.'], function () {
-    Route::get('/dashboard', function () { return view('admin.dashboard'); })->name('dashboard');
-    Route::get('/events', function () { return view('admin.events'); })->name('events.index');
-    Route::get('/transactions', function () { return view('admin.transactions'); })->name('transactions');
+Route::prefix('admin')->name('admin.')->group(function () {
     
-    // Rute Kategori (Mengarah ke folder 'categoris' sesuai di gambar Anda)
-    Route::get('/categories', function () { return view('admin.categoris.index'); })->name('categories.index');
+    // Dashboard
+    Route::get('/dashboard', function () { 
+        return view('admin.dashboard'); 
+    })->name('dashboard');
+
+    // Events (Menggunakan Resource Controller - Otomatis mencakup index, create, edit, dll)
+    Route::resource('events', EventAdminController::class);
+
+    // Transactions
+    Route::get('/transactions', function () { 
+        return view('admin.transactions'); 
+    })->name('transactions');
+    
+    // Categories
+    Route::get('/categories', function () { 
+        return view('admin.categoris.index'); 
+    })->name('categories.index');
+
 });
