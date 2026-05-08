@@ -3,9 +3,9 @@
 namespace Database\Seeders;
 
 // Import semua model yang digunakan di sini
-use App\Models\User;
-use App\Models\Category;
-use App\Models\Event;
+use App\Models\user;
+use App\Models\category;
+use App\Models\event;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
