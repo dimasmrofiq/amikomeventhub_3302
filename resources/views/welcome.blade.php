@@ -126,8 +126,8 @@
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
             @forelse($partners as $partner)
                 <div class="bg-slate-50 p-6 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center hover:-translate-y-2 transition-transform duration-300">
-                    @if($partner->logo_path)
-                        <img src="{{ asset('storage/' . $partner->logo_path) }}" alt="{{ $partner->name }}" class="h-16 object-contain mb-4 mix-blend-multiply">
+                    @if($partner->logo_url)
+                        <img src="{{ asset('storage/' . $partner->logo_url) }}" alt="{{ $partner->name }}" class="h-16 object-contain mb-4 mix-blend-multiply">
                     @else
                         <div class="h-16 w-16 bg-indigo-100 text-indigo-600 rounded-full mb-4 flex items-center justify-center font-black text-2xl uppercase shadow-inner">
                             {{ substr($partner->name, 0, 1) }}

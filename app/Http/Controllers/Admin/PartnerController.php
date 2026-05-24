@@ -8,7 +8,6 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-
 class PartnerController extends Controller
 {
     /**
@@ -50,15 +49,16 @@ class PartnerController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // Maksimal 2MB
         ]);
 
-        $logoPath = null;
+        $logoUrl = null;
         if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('partners', 'public');
+            $logoUrl = $request->file('logo')->store('partners', 'public');
         }
 
+        // DISESUAIKAN: Menggunakan nama kolom logo_url sesuai aturan UTS
         Partner::create([
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'logo_path' => $logoPath,
+            'logo_url' => $logoUrl,
         ]);
 
         return redirect()->route('admin.partners.index')->with('success', 'Partner berhasil ditambahkan!');
@@ -87,20 +87,22 @@ class PartnerController extends Controller
             'logo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $logoPath = $partner->logo_path;
+        // DISESUAIKAN: Menggunakan properti database logo_url
+        $logoUrl = $partner->logo_url;
         
         // Jika ada upload logo baru, hapus logo lama
         if ($request->hasFile('logo')) {
-            if ($partner->logo_path) {
-                Storage::disk('public')->delete($partner->logo_path);
+            if ($partner->logo_url) {
+                Storage::disk('public')->delete($partner->logo_url);
             }
-            $logoPath = $request->file('logo')->store('partners', 'public');
+            $logoUrl = $request->file('logo')->store('partners', 'public');
         }
 
+        // DISESUAIKAN: Simpan pembaruan ke kolom logo_url
         $partner->update([
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'logo_path' => $logoPath,
+            'logo_url' => $logoUrl,
         ]);
 
         return redirect()->route('admin.partners.index')->with('success', 'Partner berhasil diperbarui!');
@@ -113,9 +115,9 @@ class PartnerController extends Controller
     {
         $partner = Partner::findOrFail($id);
 
-        // Hapus logo dari storage
-        if ($partner->logo_path) {
-            Storage::disk('public')->delete($partner->logo_path);
+        // DISESUAIKAN: Hapus file berdasarkan properti database logo_url
+        if ($partner->logo_url) {
+            Storage::disk('public')->delete($partner->logo_url);
         }
 
         $partner->delete();
