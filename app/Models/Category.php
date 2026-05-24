@@ -2,22 +2,22 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Category extends Model
 {
     use HasFactory;
 
-    // Mengizinkan seeder/form mengisi kolom name dan slug
-    protected $fillable = [
-        'name',
-        'slug',
-    ];
+    // SOLUSI: Mengizinkan semua field (termasuk name dan slug) masuk ke database
+    protected $guarded = [];
 
-    // Relasi ke tabel events (Satu kategori punya banyak event)
-    public function events()
+    /**
+     * RELASI: Satu Kategori bisa memiliki banyak Partner
+     * Nama fungsi ini harus 'partners' agar sesuai dengan withCount('partners') di Controller
+     */
+    public function partners()
     {
-        return $this->hasMany(Event::class);
+        return $this->hasMany(Partner::class, 'category_id');
     }
 }

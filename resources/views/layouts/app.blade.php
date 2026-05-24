@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AmikomEventHub - Temukan Event Seru!</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap"
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700&display=swap"
         rel="stylesheet">
     <style>
         body {
@@ -32,10 +32,11 @@
             <span class="text-xl font-bold tracking-tight">AmikomEventHub</span>
         </a>
 
-        <div class="hidden md:flex gap-8 font-medium">
+        <div class="hidden md:flex items-center gap-8 font-medium">
             <a href="{{ route('katalog') }}" class="hover:text-indigo-600 transition">Jelajahi</a>
             <a href="{{ route('admin.categories.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
             <a href="{{ route('bantuan') }}" class="hover:text-indigo-600 transition">Bantuan</a>
+            <a href="{{ route('admin.dashboard') }}"class="hover:text-indigo-600 transition" >Panel Admin</a>
         </div>
         
     </nav>
