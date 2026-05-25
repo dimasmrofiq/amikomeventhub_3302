@@ -32,7 +32,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         return view('admin.dashboard'); 
     })->name('dashboard');
 
-    // Events (Resource Controller - Mencakup index, create, store, edit, update, destroy)
+    
     Route::resource('events', EventAdminController::class);
 
     // Partners (Resource Controller untuk Modul Partner Admin)
