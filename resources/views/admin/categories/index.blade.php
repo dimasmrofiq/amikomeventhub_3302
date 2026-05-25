@@ -26,6 +26,8 @@
                     <th class="px-8 py-4 w-20">No</th>
                     <th class="px-8 py-4">Nama Kategori</th>
                     <th class="px-8 py-4 text-center">Total Partner</th>
+                    <th class="px-8 py-4">Tanggal Dibuat</th>
+                    <th class="px-8 py-4">Terakhir Diperbarui</th>
                     <th class="px-8 py-4 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -40,6 +42,12 @@
                         <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-lg text-xs font-bold">
                             {{ $cat->partners_count ?? $cat->partners->count() }} Partner
                         </span>
+                    </td>
+                    <td class="px-8 py-6 text-sm text-slate-600 font-medium">
+                        {{ $cat->created_at ? $cat->created_at->format('d M Y, H:i') : '-' }}
+                    </td>
+                    <td class="px-8 py-6 text-sm text-slate-400">
+                        {{ $cat->updated_at ? $cat->updated_at->format('d M Y, H:i') : '-' }}
                     </td>
                     <td class="px-8 py-6">
                         <div class="flex justify-center gap-2">
@@ -59,7 +67,7 @@
                 </tr>
                 @empty
                 <tr>
-                    <td colspan="4" class="text-center py-8 text-slate-400 font-medium">
+                    <td colspan="6" class="text-center py-8 text-slate-400 font-medium">
                         Tidak ada data kategori ditemukan di database.
                     </td>
                 </tr>

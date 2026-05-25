@@ -34,6 +34,15 @@
             <a href="{{ route('admin.partners.index') }}" class="flex items-center gap-3 px-4 py-3 {{ request()->routeIs('admin.partners.*') ? 'bg-indigo-800 text-white' : 'hover:bg-indigo-800' }} rounded-xl font-bold transition">
                 Kelola Partner
             </a>
+
+            <div class="pt-4 border-t border-indigo-800/60 my-2"></div>
+
+            <a href="{{ route('home') }}" class="flex items-center gap-3 px-4 py-3 bg-indigo-800/50 border border-indigo-700/50 text-indigo-200 hover:text-white hover:bg-emerald-600 hover:border-emerald-500 rounded-xl font-bold transition group">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-indigo-400 group-hover:text-white transition" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Lihat Website
+            </a>
         </nav>
     </aside>
 

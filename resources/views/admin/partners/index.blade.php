@@ -48,6 +48,8 @@
                         <th class="p-4 pl-6">Logo</th>
                         <th class="p-4">Nama Partner</th>
                         <th class="p-4">Kategori</th>
+                        <th class="p-4">Tanggal Dibuat</th>
+                        <th class="p-4">Terakhir Diperbarui</th>
                         <th class="p-4 text-center">Aksi</th>
                     </tr>
                 </thead>
@@ -67,16 +69,27 @@
                                     {{ $partner->category->name ?? 'Umum' }}
                                 </span>
                             </td>
+                            <td class="p-4 text-xs text-slate-600 font-medium">
+                                {{ $partner->created_at ? $partner->created_at->format('d M Y, H:i') : '-' }}
+                            </td>
+                            <td class="p-4 text-xs text-slate-400">
+                                {{ $partner->updated_at ? $partner->updated_at->format('d M Y, H:i') : '-' }}
+                            </td>
                             <td class="p-4">
                                 <div class="flex justify-center gap-2">
-                                    <a href="{{ route('admin.partners.edit', $partner->id) }}" class="px-3 py-1.5 border border-slate-200 text-slate-600 rounded-lg hover:border-indigo-600 hover:text-indigo-600 transition font-medium text-xs">
-                                        Edit
+                                    <a href="{{ route('admin.partners.edit', $partner->id) }}" class="p-2 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition" title="Edit">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
+                                        </svg>
                                     </a>
+                                    
                                     <form action="{{ route('admin.partners.destroy', $partner->id) }}" method="POST" onsubmit="return confirm('Hapus partner ini?')" class="inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="px-3 py-1.5 bg-rose-50 text-rose-600 rounded-lg hover:bg-rose-100 transition font-medium text-xs">
-                                            Hapus
+                                        <button type="submit" class="p-2 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition" title="Hapus">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
                                         </button>
                                     </form>
                                 </div>
@@ -84,7 +97,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="p-8 text-center text-slate-400 italic">
+                            <td colspan="6" class="p-8 text-center text-slate-400 italic">
                                 Data partner tidak ditemukan atau belum diinput.
                             </td>
                         </tr>

@@ -37,7 +37,7 @@ class EventController extends Controller
             'title'       => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'date'        => 'required',
+            'date'        => 'required|date', // OPTIMASI: Validasi dipastikan bertipe tanggal
             'location'    => 'required|string',
             'price'       => 'required|numeric|min:0',
             'stock'       => 'required|numeric|min:0',
@@ -65,26 +65,25 @@ class EventController extends Controller
 
     /**
      * Menampilkan form edit untuk event tertentu.
+     * OPTIMASI: Menggunakan Route Model Binding (Event $event)
      */
-    public function edit($id)
+    public function edit(Event $event)
     {
-        $event = Event::findOrFail($id);
         $categories = Category::all();
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
     /**
      * Memperbarui data event di database.
+     * OPTIMASI: Menggunakan Route Model Binding (Event $event)
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Event $event)
     {
-        $event = Event::findOrFail($id);
-
         $request->validate([
             'title'       => 'required|string|max:255',
             'category_id' => 'required|exists:categories,id',
             'description' => 'nullable|string',
-            'date'        => 'required',
+            'date'        => 'required|date', // OPTIMASI: Validasi tanggal
             'location'    => 'required|string',
             'price'       => 'required|numeric|min:0',
             'stock'       => 'required|numeric|min:0',
@@ -116,11 +115,10 @@ class EventController extends Controller
 
     /**
      * Menghapus event dari database beserta berkas posternya.
+     * OPTIMASI: Menggunakan Route Model Binding (Event $event)
      */
-    public function destroy($id)
+    public function destroy(Event $event)
     {
-        $event = Event::findOrFail($id);
-        
         if ($event->poster_path) {
             Storage::disk('public')->delete($event->poster_path);
         }
