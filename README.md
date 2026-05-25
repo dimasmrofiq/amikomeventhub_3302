@@ -9,6 +9,7 @@ Tugas #3 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/ <br>
 tugas#4 : saya push database saya menggunakan laptop teman saya jadi colab <br>
 
 tugas#5 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/events/create <br>
-menambahkan crud
+menambahkan crud <br>
+UTS : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/
 
 ---
