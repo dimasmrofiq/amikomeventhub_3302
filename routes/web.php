@@ -2,15 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\EventController as EventAdminController;
-use App\Http\Controllers\Admin\PartnerController as PartnerAdminController; // <-- Namespace Partner Admin
-use App\Http\Controllers\Admin\CategoryController as CategoryAdminController; // <-- TAMBAHAN: Namespace Category Admin
-use App\Http\Controllers\HomeController; // <-- Namespace HomeController untuk Publik
+use App\Http\Controllers\Admin\PartnerController as PartnerAdminController; 
+use App\Http\Controllers\Admin\CategoryController as CategoryAdminController; 
+use App\Http\Controllers\Admin\AuthController; 
+use App\Http\Controllers\HomeController; 
 
 // ==========================================
 // RUTE PUBLIK (HALAMAN DEPAN)
 // ==========================================
 
-// PERUBAHAN: Rute home sekarang diarahkan ke HomeController, bukan closure lagi
+
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/profil', function () { return view('profil'); })->name('profil');
@@ -22,23 +23,35 @@ Route::get('/event/detail', function () { return view('event-detail'); })->name(
 Route::get('/checkout', function () { return view('checkout'); })->name('checkout');
 Route::get('/ticket', function () { return view('ticket'); })->name('ticket');
 
+
 // ==========================================
-// RUTE ADMIN (DIGABUNG)
+// RUTE AUTHENTICATION (LOGIN ADMIN)
 // ==========================================
-Route::prefix('admin')->name('admin.')->group(function () {
+// PERUBAHAN: Dikembalikan menjadi 'admin.login' agar cocok dengan bootstrap/app.php Anda
+Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
+Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
+
+
+// ==========================================
+// RUTE ADMIN (DILINDUNGI MIDDLEWARE)
+// ==========================================
+Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     
+    // Rute Logout (hanya bisa diakses jika sudah login)
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
     // Dashboard Admin
     Route::get('/dashboard', function () { 
         return view('admin.dashboard'); 
     })->name('dashboard');
 
-    
+    // Events (Resource Controller)
     Route::resource('events', EventAdminController::class);
 
-    // Partners (Resource Controller untuk Modul Partner Admin)
+    // Partners (Resource Controller)
     Route::resource('partners', PartnerAdminController::class);
 
-    // Categories (PERUBAHAN: Menggunakan Resource Controller agar seluruh route CRUD Kategori aktif otomatis)
+    // Categories (Resource Controller)
     Route::resource('categories', CategoryAdminController::class);
 
     // Transactions

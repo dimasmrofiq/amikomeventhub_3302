@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Http\Request; // <-- Pastikan ini ditambahkan jika pakai 'Request'
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -11,8 +12,17 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        
+        // Mendaftarkan alias middleware admin
+        $middleware->alias([
+            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+        ]);
+
+        // TAMBAHKAN BARIS INI: Beritahu Laravel ke mana tamu harus dilempar
+        $middleware->redirectGuestsTo(fn (Request $request) => route('admin.login'));
+        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
+    
