@@ -4,8 +4,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\EventController as EventAdminController;
 use App\Http\Controllers\Admin\PartnerController as PartnerAdminController; 
 use App\Http\Controllers\Admin\CategoryController as CategoryAdminController; 
+use App\Http\Controllers\Admin\TransactionController as AdminTransactionController; 
 use App\Http\Controllers\Admin\AuthController; 
 use App\Http\Controllers\HomeController; 
+use App\Http\Controllers\CheckoutController; 
+use App\Http\Controllers\TicketController;   
 
 // ==========================================
 // RUTE PUBLIK (HALAMAN DEPAN)
@@ -20,14 +23,19 @@ Route::get('/bantuan', function () { return view('bantuan'); })->name('bantuan')
 Route::get('/kontak', function () { return view('kontak'); })->name('kontak');
 
 Route::get('/event/detail', function () { return view('event-detail'); })->name('event.show');
-Route::get('/checkout', function () { return view('checkout'); })->name('checkout');
-Route::get('/ticket', function () { return view('ticket'); })->name('ticket');
+
+// Rute checkout dinamis menggunakan CheckoutController
+Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
+
+// Rute sukses tiket ke TicketController
+Route::get('/ticket', [TicketController::class, 'index'])->name('ticket.index');
 
 
 // ==========================================
 // RUTE AUTHENTICATION (LOGIN ADMIN)
 // ==========================================
-// PERUBAHAN: Dikembalikan menjadi 'admin.login' agar cocok dengan bootstrap/app.php Anda
+
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
 
@@ -37,7 +45,7 @@ Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login
 // ==========================================
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     
-    // Rute Logout (hanya bisa diakses jika sudah login)
+    // Rute Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard Admin
@@ -54,9 +62,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Categories (Resource Controller)
     Route::resource('categories', CategoryAdminController::class);
 
-    // Transactions
-    Route::get('/transactions', function () { 
-        return view('admin.transactions'); 
-    })->name('transactions');
+    // FIX DI SINI: Nama rute dikembalikan menjadi 'transactions' agar pas 
+    // dengan pemanggilan route('admin.transactions') di dashboard/sidebar Anda.
+    Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions');
 
 });
