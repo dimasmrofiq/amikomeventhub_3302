@@ -12,5 +12,7 @@ tugas#5 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/event
 menambahkan crud <br>
 UTS : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/ <br>
 
-Tugas#8 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/login
----
+Tugas#8 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/login <br>
+Tugas#10 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/transactions
+
+
