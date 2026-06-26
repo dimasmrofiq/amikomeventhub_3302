@@ -14,7 +14,6 @@ use App\Http\Controllers\TicketController;
 // RUTE PUBLIK (HALAMAN DEPAN)
 // ==========================================
 
-
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/profil', function () { return view('profil'); })->name('profil');
@@ -28,7 +27,13 @@ Route::get('/event/detail', function () { return view('event-detail'); })->name(
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 
-// Rute sukses tiket ke TicketController
+// --- RUTE INTEGRASI MIDTRANS ---
+// Menampilkan halaman tombol snap pembayaran midtrans
+Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
+// Menangani redirect jika pembayaran berhasil
+Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+
+// Rute sukses tiket ke TicketController (bawaan modul lama)
 Route::get('/ticket', [TicketController::class, 'index'])->name('ticket.index');
 
 
@@ -65,5 +70,10 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // FIX DI SINI: Nama rute dikembalikan menjadi 'transactions' agar pas 
     // dengan pemanggilan route('admin.transactions') di dashboard/sidebar Anda.
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions');
+
+    Route::get('/success/{order_id}', [
+    \App\Http\Controllers\CheckoutController::class, 
+    'success'
+])->name('checkout.success');
 
 });
