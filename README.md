@@ -14,6 +14,8 @@ UTS : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/ <br>
 
 Tugas#8 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/login <br>
 Tugas#10 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/admin/transactions <br>
-Hosting baru : https://amikomeventhub-3302.gt.tc/
+Tugas#11 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/checkout/3  https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/payment/success/EVH-OLBE6W <br>
+
+Hosting baru : https://amikomeventhub-3302.gt.tc
 
 
