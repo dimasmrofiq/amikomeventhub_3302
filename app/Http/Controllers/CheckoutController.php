@@ -4,20 +4,30 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Transaction;
-use App\Models\Category; // Ditambahkan untuk menu footer/header sesuai modul
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class CheckoutController extends Controller
 {
+    /**
+     * Menampilkan Form Isi Data Pemesan Tiket
+     */
     public function create(Event $event)
     {
         if ($event->stock <= 0) {
             return back()->with('error', 'Maaf, tiket untuk event ini sudah habis!');
         }
-        return view('checkout.create', compact('event'));
+        
+        // Ambil daftar kategori agar menu Navigasi Header/Footer muncul sempurna
+        $categories = Category::all();
+        
+        return view('checkout.create', compact('event', 'categories'));
     }
 
+    /**
+     * Memproses Pengurangan Stok dan Menyimpan Transaksi ke Midtrans
+     */
     public function store(Request $request, Event $event)
     {
         $request->validate([
@@ -44,7 +54,7 @@ class CheckoutController extends Controller
             'snap_token'     => null,
         ]);
 
-        // DISESUAIKAN: Membaca dari config/midtrans.php
+        // Membaca dari config/midtrans.php
         \Midtrans\Config::$serverKey = config('midtrans.server_key'); 
         \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
         \Midtrans\Config::$isSanitized = true;
@@ -72,6 +82,9 @@ class CheckoutController extends Controller
         }
     }
 
+    /**
+     * Menampilkan Halaman Transisi Pembayaran
+     */
     public function payment($order_id)
     {
         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
@@ -79,16 +92,16 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Menangani Pengalihan ketika Pembayaran Berhasil (Sesuai Halaman 111)
+     * Menangani Pengalihan ketika Pembayaran Berhasil (Sesuai Modul)
      */
     public function success($order_id)
     {
-        // Ambil daftar kategori untuk keperluan menu footer/header sesuai modul
+        // Ambil daftar kategori untuk keperluan menu footer/header
         $categories = Category::all();
         
         $transaction = Transaction::where('order_id', $order_id)->firstOrFail();
 
-        // DISESUAIKAN: Membaca dari config/midtrans.php agar konsisten
+        // Membaca dari config/midtrans.php agar konsisten
         \Midtrans\Config::$serverKey = config('midtrans.server_key'); 
         \Midtrans\Config::$isProduction = config('midtrans.is_production', false);
 
@@ -103,6 +116,48 @@ class CheckoutController extends Controller
             return redirect()->route('home')->with('error', 'Transaksi tidak ditemukan atau gagal diproses.');
         }
         
+        // Refresh data transaksi agar perubahan status di atas langsung terbaca di halaman view
+        $transaction->refresh();
+        
         return view('checkout.success', compact('transaction', 'categories'));
+    }
+
+    /**
+     * Menangani Notifikasi Callback (Webhook) dari Midtrans secara real-time
+     */
+    public function callback(Request $request)
+    {
+        // 1. Ambil Server Key Anda dari config
+        $serverKey = config('midtrans.server_key');
+        
+        // 2. Buat Hash dari data yang dikirim Midtrans untuk memverifikasi keaslian (Keamanan)
+        $hashed = hash("sha512", $request->order_id . $request->status_code . $request->gross_amount . $serverKey);
+
+        // 3. Pastikan notifikasi ini benar-benar datang dari Midtrans
+        if ($hashed == $request->signature_key) {
+            
+            // Cari transaksi berdasarkan order_id
+            $transaction = Transaction::where('order_id', $request->order_id)->first();
+            
+            if ($transaction) {
+                // Jika pembayaran lunas
+                if ($request->transaction_status == 'capture' || $request->transaction_status == 'settlement') {
+                    $transaction->update(['status' => 'success']);
+                } 
+                // Jika pembayaran gagal, ditolak, atau kadaluarsa
+                elseif (in_array($request->transaction_status, ['cancel', 'deny', 'expire'])) {
+                    $transaction->update(['status' => 'failed']);
+                    
+                    // Kembalikan stok tiket event agar bisa dibeli orang lain
+                    $event = Event::find($transaction->event_id);
+                    if ($event) {
+                        $event->increment('stock');
+                    }
+                }
+            }
+        }
+        
+        // Kembalikan response 200 OK ke Midtrans agar sistem mereka tahu kita sudah menerima pesannya
+        return response()->json(['message' => 'Callback diterima']);
     }
 }

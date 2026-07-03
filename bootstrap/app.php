@@ -3,7 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
-use Illuminate\Http\Request; // <-- Pastikan ini ditambahkan jika pakai 'Request'
+use Illuminate\Http\Request; 
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -18,8 +18,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
         ]);
 
-        // TAMBAHKAN BARIS INI: Beritahu Laravel ke mana tamu harus dilempar
+        // Beritahu Laravel ke mana tamu (guest) harus dilempar jika belum login
         $middleware->redirectGuestsTo(fn (Request $request) => route('admin.login'));
+        
+        // Membebaskan rute webhook Midtrans dari pengecekan CSRF Token
+        $middleware->validateCsrfTokens(except: [
+            '/midtrans/callback'
+        ]);
         
     })
     ->withExceptions(function (Exceptions $exceptions): void {

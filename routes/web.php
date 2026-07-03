@@ -32,6 +32,8 @@ Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('ch
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
 // Menangani redirect jika pembayaran berhasil
 Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
+// Menangani notifikasi callback dari Midtrans
+Route::post('/midtrans/callback', [CheckoutController::class, 'callback']);
 
 // Rute sukses tiket ke TicketController (bawaan modul lama)
 Route::get('/ticket', [TicketController::class, 'index'])->name('ticket.index');
@@ -67,13 +69,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Categories (Resource Controller)
     Route::resource('categories', CategoryAdminController::class);
 
-    // FIX DI SINI: Nama rute dikembalikan menjadi 'transactions' agar pas 
-    // dengan pemanggilan route('admin.transactions') di dashboard/sidebar Anda.
+    // Rute Transaksi
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions');
 
-    Route::get('/success/{order_id}', [
-    \App\Http\Controllers\CheckoutController::class, 
-    'success'
-])->name('checkout.success');
-
+    
 });
