@@ -22,4 +22,6 @@ Hosting baru : https://amikomeventhub-3302.gt.tc
 
 Tugas newamikomeventhub_3302 : https://github.com/dimasmrofiq/newamikomeventhub_3302
 
+Hosting newamikomeventhub_3302 : https://newamikomeventhub-3302.gt.tc/?i=1
+
 
