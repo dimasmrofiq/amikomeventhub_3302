@@ -20,6 +20,6 @@ Tugas#11 : https://amikomeventhub-3302-main-p3lzjc.free.laravel.cloud/checkout/3
 
 Hosting baru : https://amikomeventhub-3302.gt.tc
 
-tugas newamikomeventhub_3302 : https://github.com/dimasmrofiq/newamikomeventhub_3302
+Tugas newamikomeventhub_3302 : https://github.com/dimasmrofiq/newamikomeventhub_3302
 
 
