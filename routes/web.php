@@ -8,7 +8,8 @@ use App\Http\Controllers\Admin\TransactionController as AdminTransactionControll
 use App\Http\Controllers\Admin\AuthController; 
 use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\CheckoutController; 
-use App\Http\Controllers\TicketController;   
+use App\Http\Controllers\TicketController; 
+use App\Http\Controllers\Auth\SocialiteController; // <-- Import SocialiteController
 
 // ==========================================
 // RUTE PUBLIK (HALAMAN DEPAN)
@@ -40,11 +41,15 @@ Route::get('/ticket', [TicketController::class, 'index'])->name('ticket.index');
 
 
 // ==========================================
-// RUTE AUTHENTICATION (LOGIN ADMIN)
+// RUTE AUTHENTICATION (LOGIN ADMIN & GOOGLE SSO)
 // ==========================================
 
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
+
+// --- RUTE GOOGLE SSO ---
+Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 
 
 // ==========================================
@@ -72,5 +77,4 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     // Rute Transaksi
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions');
 
-    
 });
