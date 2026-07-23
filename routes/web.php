@@ -9,12 +9,16 @@ use App\Http\Controllers\Admin\AuthController;
 use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\CheckoutController; 
 use App\Http\Controllers\TicketController; 
-use App\Http\Controllers\Auth\SocialiteController; // <-- Import SocialiteController
 
-// ==========================================
-// RUTE PUBLIK (HALAMAN DEPAN)
-// ==========================================
+use App\Http\Controllers\ReviewController; 
+use App\Http\Controllers\Auth\LoginController;
 
+
+/*
+|--------------------------------------------------------------------------
+| 1. RUTE PUBLIK (HALAMAN DEPAN & CHECKOUT)
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/profil', function () { return view('profil'); })->name('profil');
@@ -24,40 +28,63 @@ Route::get('/kontak', function () { return view('kontak'); })->name('kontak');
 
 Route::get('/event/detail', function () { return view('event-detail'); })->name('event.show');
 
-// Rute checkout dinamis menggunakan CheckoutController
+// Rute Checkout & Integrasi Midtrans
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 
-// --- RUTE INTEGRASI MIDTRANS ---
-// Menampilkan halaman tombol snap pembayaran midtrans
+
 Route::get('/payment/{order_id}', [CheckoutController::class, 'payment'])->name('checkout.payment');
-// Menangani redirect jika pembayaran berhasil
+
 Route::get('/payment/success/{order_id}', [CheckoutController::class, 'success'])->name('checkout.success');
-// Menangani notifikasi callback dari Midtrans
+
 Route::post('/midtrans/callback', [CheckoutController::class, 'callback']);
 
-// Rute sukses tiket ke TicketController (bawaan modul lama)
+// Rute Tiket
 Route::get('/ticket', [TicketController::class, 'index'])->name('ticket.index');
 
 
-// ==========================================
-// RUTE AUTHENTICATION (LOGIN ADMIN & GOOGLE SSO)
-// ==========================================
+/*
+|--------------------------------------------------------------------------
+| 2. RUTE AUTHENTICATION USER (PESERTA & GOOGLE SSO)
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', [LoginController::class, 'showUserLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'loginUser']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Google SSO User
+Route::get('/auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
+
+
+/*
+|--------------------------------------------------------------------------
+| 3. RUTE USER TERAUTENTIKASI (FITUR ULASAN & RATING)
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth'])->group(function () {
+    Route::post('/event/{event}/review', [ReviewController::class, 'store'])->name('review.store');
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| 4. RUTE AUTHENTICATION ADMIN
+|--------------------------------------------------------------------------
+*/
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
 
-// --- RUTE GOOGLE SSO ---
-Route::get('/auth/google', [SocialiteController::class, 'redirectToGoogle'])->name('auth.google');
-Route::get('/auth/google/callback', [SocialiteController::class, 'handleGoogleCallback']);
 
-
-// ==========================================
-// RUTE ADMIN (DILINDUNGI MIDDLEWARE)
-// ==========================================
+/*
+|--------------------------------------------------------------------------
+| 5. RUTE ADMIN (DILINDUNGI MIDDLEWARE AUTH & ADMIN)
+|--------------------------------------------------------------------------
+*/
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     
-    // Rute Logout
+    // Logout Admin
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
     // Dashboard Admin
@@ -65,16 +92,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
         return view('admin.dashboard'); 
     })->name('dashboard');
 
-    // Events (Resource Controller)
+    // Master Data Admin
     Route::resource('events', EventAdminController::class);
-
-    // Partners (Resource Controller)
+    
     Route::resource('partners', PartnerAdminController::class);
-
-    // Categories (Resource Controller)
+    
     Route::resource('categories', CategoryAdminController::class);
 
-    // Rute Transaksi
+    // Transaksi Admin
+   
     Route::get('/transactions', [AdminTransactionController::class, 'index'])->name('transactions');
 
 });

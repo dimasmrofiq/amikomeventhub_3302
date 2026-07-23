@@ -19,6 +19,15 @@ class Event extends Model
     public function category() {
         return $this->belongsTo(Category::class);
     }
+
+    public function reviews()
+{
+    return $this->hasMany(Review::class);
 }
 
-
+// Helper untuk menghitung rata-rata rating event
+public function averageRating()
+{
+    return round($this->reviews()->avg('rating') ?? 0, 1);
+}
+}
