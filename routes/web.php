@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\PartnerController as PartnerAdminController;
 use App\Http\Controllers\Admin\CategoryController as CategoryAdminController; 
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController; 
 use App\Http\Controllers\Admin\AuthController; 
+use App\Http\Controllers\Admin\DashboardController; // Fitur 4 Dashboard Analitik
 use App\Http\Controllers\HomeController; 
 use App\Http\Controllers\CheckoutController; 
 use App\Http\Controllers\TicketController; 
@@ -29,9 +30,11 @@ Route::get('/kontak', function () { return view('kontak'); })->name('kontak');
 
 Route::get('/event/detail', function () { return view('event-detail'); })->name('event.show');
 
+
 // Rute Checkout & Integrasi Midtrans
 
 Route::get('/checkout/{event}', [CheckoutController::class, 'create'])->name('checkout.create');
+
 
 Route::post('/checkout/{event}', [CheckoutController::class, 'store'])->name('checkout.store');
 
@@ -55,8 +58,13 @@ Route::get('/login', [LoginController::class, 'showUserLoginForm'])->name('login
 Route::post('/login', [LoginController::class, 'loginUser']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Route Pendaftaran User
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
 // Google SSO User
 Route::get('/auth/google', [LoginController::class, 'redirectToGoogle'])->name('auth.google');
+
 Route::get('/auth/google/callback', [LoginController::class, 'handleGoogleCallback']);
 
 
@@ -67,7 +75,8 @@ Route::get('/auth/google/callback', [LoginController::class, 'handleGoogleCallba
 */
 Route::middleware(['auth'])->group(function () {
     Route::post('/event/{event}/review', [ReviewController::class, 'store'])->name('review.store');
-});
+
+    });
 
 
 /*
@@ -76,31 +85,30 @@ Route::middleware(['auth'])->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::get('/admin/login', [AuthController::class, 'showLoginForm'])->name('admin.login');
+
+
+
 Route::post('/admin/login', [AuthController::class, 'login'])->name('admin.login.post');
 
-// Route Pendaftaran User
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+
 
 
 /*
 |--------------------------------------------------------------------------
-| 5. RUTE BERSAMA (SUPERADMIN & ORGANIZER) - FITUR 3
+| 5. RUTE BERSAMA (SUPERADMIN & ORGANIZER)
 |--------------------------------------------------------------------------
-| Menggunakan middleware 'organizer' (yang juga mengizinkan superadmin).
-| Organizer bisa mengakses Dashboard, Event, dan Logout.
+| Menggunakan middleware 'organizer' (yang mengizinkan superadmin dan organizer).
+| Organizer & Superadmin bisa mengakses Dashboard, Event, Transaksi, dan Logout.
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'organizer'])->group(function () {
     
-    // Logout
+    // Logout khusus admin panel
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-    // Dashboard 
-    Route::get('/dashboard', function () { 
-        return view('admin.dashboard'); 
-    })->name('dashboard');
+    // Dashboard Grafik (Fitur 4)
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Master Data Event (Controller sudah mengatur agar HIMA hanya melihat event-nya sendiri)
+    // Master Data Event (Controller mengatur HIMA hanya melihat event-nya sendiri)
     Route::resource('events', EventAdminController::class);
 
     // Transaksi Admin & Organizer
@@ -113,7 +121,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'organizer'])->group
 |--------------------------------------------------------------------------
 | 6. RUTE KHUSUS SUPERADMIN
 |--------------------------------------------------------------------------
-| Menggunakan middleware 'admin' murni. Organizer tidak akan bisa mengakses ini.
+| Menggunakan middleware 'admin' (mengizinkan superadmin/admin). Organizer/HIMA dilarang masuk.
 */
 Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(function () {
     
@@ -122,6 +130,5 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'admin'])->group(fun
     
     Route::resource('categories', CategoryAdminController::class);
 
-
-
+    
 });
