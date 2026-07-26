@@ -13,7 +13,8 @@ class Review extends Model
 
     public function user()
     {
-        return $table->belongsTo(User::class);
+        // Ubah $table menjadi $this
+        return $this->belongsTo(User::class);
     }
 
     public function event()

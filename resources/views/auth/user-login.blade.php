@@ -52,7 +52,16 @@
             <button type="submit" class="w-full py-3.5 bg-indigo-600 text-white font-bold rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100 text-xs">
                 Masuk ke Akun
             </button>
+            
         </form>
+
+        <!-- Tambahkan ini di bawah tombol Masuk -->
+<p class="mt-8 text-center text-sm text-slate-500">
+    Belum punya akun? 
+    <a href="{{ route('register') }}" class="font-bold text-indigo-600 hover:text-indigo-500 transition">
+        Daftar sekarang
+    </a>
+</p>
 
     </div>
 </div>

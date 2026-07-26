@@ -55,85 +55,42 @@
 
 
     <!-- ========================================== -->
-    <!-- FITUR 2: FORM RATING & ULASAN PESERTA     -->
+    <!-- FITUR 2: HANYA MENAMPILKAN ULASAN PESERTA  -->
     <!-- ========================================== -->
-    <div class="max-w-5xl mx-auto border-t border-slate-200 pt-10">
+    <div class="max-w-4xl mx-auto border-t border-slate-200 pt-10">
         <h2 class="text-xl font-bold text-slate-800 mb-6 text-center">Ulasan & Rating Acara</h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            
-            <!-- FORM RATING & ULASAN -->
-            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-                <h3 class="font-bold text-slate-700 mb-4 border-b pb-2">Berikan Ulasan</h3>
+        <!-- DAFTAR ULASAN PESERTA (Diperlebar karena form input sudah dihapus) -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                <h3 class="font-bold text-slate-700">Apa kata mereka yang sudah membeli?</h3>
+                <span class="text-amber-500 font-bold text-sm bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
+                    ★ {{ method_exists($event, 'averageRating') ? $event->averageRating() : '5.0' }}
+                </span>
+            </div>
 
-                <!-- Alert Notifikasi -->
-                @if(session('success'))
-                    <div class="p-3 mb-4 text-xs text-green-700 bg-green-100 rounded-xl">{{ session('success') }}</div>
-                @endif
-                @if(session('error'))
-                    <div class="p-3 mb-4 text-xs text-red-700 bg-red-100 rounded-xl">{{ session('error') }}</div>
-                @endif
-
-                @auth
-                    <form action="{{ route('review.store', $event->id) }}" method="POST" class="space-y-4">
-                        @csrf
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-2">Penilaian Bintang</label>
-                            <div class="flex items-center gap-1.5 flex-wrap">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <label class="inline-flex items-center gap-1 cursor-pointer bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg hover:bg-amber-50 text-xs font-semibold">
-                                        <input type="radio" name="rating" value="{{ $i }}" class="text-amber-500 focus:ring-amber-400" required>
-                                        <span class="text-slate-700">{{ $i }} ★</span>
-                                    </label>
-                                @endfor
-                            </div>
+            <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                @forelse($event->reviews ?? [] as $review)
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
+                        <div class="flex justify-between items-center mb-1">
+                            <span class="font-bold text-slate-800 text-sm">{{ $review->user->name ?? 'Pembeli Tiket' }}</span>
+                            <span class="text-amber-500 font-bold text-xs">
+                                @for($s = 1; $s <= $review->rating; $s++) ★ @endfor
+                            </span>
                         </div>
-
-                        <div>
-                            <label for="comment" class="block text-xs font-bold text-slate-600 mb-2">Ulasan / Testimoni</label>
-                            <textarea name="comment" id="comment" rows="3" class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:border-indigo-500 text-xs" placeholder="Bagaimana kesan Anda mengikuti acara ini?"></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full py-2.5 bg-slate-800 text-white font-bold rounded-xl hover:bg-slate-900 transition text-xs">
-                            Kirim Ulasan
-                        </button>
-                    </form>
-                @else
-                    <div class="p-4 bg-slate-50 border border-slate-200 rounded-xl text-center text-xs text-slate-600">
-                        Silakan <a href="{{ route('login') }}" class="text-indigo-600 font-bold underline">Login</a> terlebih dahulu untuk memberikan ulasan.
+                        <p class="text-slate-600 text-sm">{{ $review->comment ?? 'Tidak ada komentar tertulis.' }}</p>
+                        <span class="text-[11px] text-slate-400 mt-2 block">{{ $review->created_at ? $review->created_at->diffForHumans() : '' }}</span>
                     </div>
-                @endauth
+                @empty
+                    <div class="text-center py-10 flex flex-col items-center justify-center">
+                        <span class="text-4xl mb-3">⭐</span>
+                        <p class="text-slate-500 font-medium text-sm">Belum ada ulasan untuk event ini.</p>
+                        <p class="text-slate-400 text-xs mt-1">Jadilah yang pertama memberikan ulasan setelah membeli tiket!</p>
+                    </div>
+                @endforelse
+           
             </div>
-
-            <!-- DAFTAR ULASAN PESERTA -->
-            <div class="md:col-span-2 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
-                <div class="flex justify-between items-center mb-4 border-b pb-2">
-                    <h3 class="font-bold text-slate-700">Daftar Ulasan Peserta</h3>
-                    <span class="text-amber-500 font-bold text-sm bg-amber-50 px-3 py-1 rounded-full border border-amber-200">
-                        ★ {{ method_exists($event, 'averageRating') ? $event->averageRating() : '5.0' }}
-                    </span>
-                </div>
-
-                <div class="space-y-4 max-h-80 overflow-y-auto pr-2">
-                    @forelse($event->reviews ?? [] as $review)
-                        <div class="p-4 bg-slate-50 rounded-xl border border-slate-100">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="font-bold text-slate-800 text-sm">{{ $review->user->name ?? 'Pembeli Tiket' }}</span>
-                                <span class="text-amber-500 font-bold text-xs">
-                                    @for($s = 1; $s <= $review->rating; $s++) ★ @endfor
-                                </span>
-                            </div>
-                            <p class="text-slate-600 text-xs">{{ $review->comment ?? 'Tidak ada komentar tertulis.' }}</p>
-                            <span class="text-[10px] text-slate-400 mt-2 block">{{ $review->created_at ? $review->created_at->diffForHumans() : '' }}</span>
-                        </div>
-                    @empty
-                        <div class="text-center py-8 text-slate-400 text-xs">
-                            Belum ada ulasan untuk event ini. Jadilah yang pertama memberikan ulasan!
-                        </div>
-                    @endforelse
-                </div>
-            </div>
-
+       
         </div>
     </div>
 </main>

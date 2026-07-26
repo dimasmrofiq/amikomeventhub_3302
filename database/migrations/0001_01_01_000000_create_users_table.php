@@ -18,8 +18,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             
-            // Kolom role ditambahkan di sini menggunakan struktur ENUM sesuai instruksi modul
-            $table->enum('role', ['admin', 'user'])->default('user');
+            // Kolom role disesuaikan dengan kebutuhan Fitur 3 Anda
+            $table->enum('role', ['superadmin', 'organizer', 'user'])->default('user');
             
             $table->rememberToken();
             $table->timestamps();

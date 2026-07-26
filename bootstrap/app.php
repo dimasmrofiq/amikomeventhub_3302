@@ -13,9 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         
-        // Mendaftarkan alias middleware admin
+        // Mendaftarkan alias middleware admin dan organizer (DIGABUNGKAN DI SINI)
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminMiddleware::class,
+            'admin'     => \App\Http\Middleware\AdminMiddleware::class,
+            'organizer' => \App\Http\Middleware\OrganizerMiddleware::class, 
         ]);
 
         // Beritahu Laravel ke mana tamu (guest) harus dilempar jika belum login
