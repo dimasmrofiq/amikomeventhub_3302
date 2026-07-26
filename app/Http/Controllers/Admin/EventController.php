@@ -7,30 +7,30 @@ use App\Models\Event;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str; // <-- WAJIB DITAMBAHKAN UNTUK MEMBUAT SLUG
 
 class EventController extends Controller
 {
-    /**
-     * Menampilkan daftar semua event di halaman admin.
-     */
     public function index()
     {
-        $events = Event::with('category')->latest()->get();
+        $user = Auth::user();
+
+        if ($user->isSuperAdmin()) {
+            $events = Event::with(['category', 'organizer'])->latest()->get();
+        } else {
+            $events = Event::with('category')->where('user_id', $user->id)->latest()->get();
+        }
+
         return view('admin.events.index', compact('events'));
     }
 
-    /**
-     * Menampilkan form untuk membuat event baru.
-     */
     public function create()
     {
         $categories = Category::all();
         return view('admin.events.create', compact('categories'));
     }
 
-    /**
-     * Menyimpan data event baru ke database.
-     */
     public function store(Request $request)
     {
         $request->validate([
@@ -49,33 +49,41 @@ class EventController extends Controller
             $posterPath = $request->file('poster')->store('posters', 'public');
         }
 
+        // Membuat slug otomatis dari title (contoh: "Event Amikom" menjadi "event-amikom")
+        // Dan memastikan slug unik jika ada judul yang sama
+        $slug = Str::slug($request->title);
+        $originalSlug = $slug;
+        $count = 1;
+        while (Event::where('slug', $slug)->exists()) {
+            $slug = $originalSlug . '-' . $count;
+            $count++;
+        }
+
         Event::create([
+            'user_id'     => Auth::id(), 
             'category_id' => $request->category_id,
             'title'       => $request->title,
+            'slug'        => $slug, // <-- SLUG DIMASUKKAN DI SINI
             'description' => $request->description,
             'date'        => $request->date,
             'location'    => $request->location,
             'price'       => $request->price,
             'stock'       => $request->stock,
+            'quota'       => $request->stock, // Samakan quota dengan stock form input
             'poster_path' => $posterPath,
         ]);
 
         return redirect()->route('admin.events.index')->with('success', 'Event baru berhasil ditambahkan!');
     }
 
-    /**
-     * Menampilkan form edit untuk event tertentu.
-     */
     public function edit($id)
     {
         $event = Event::findOrFail($id);
         $categories = Category::all();
+        
         return view('admin.events.edit', compact('event', 'categories'));
     }
 
-    /**
-     * Memperbarui data event di database.
-     */
     public function update(Request $request, $id)
     {
         $event = Event::findOrFail($id);
@@ -103,6 +111,8 @@ class EventController extends Controller
         $event->update([
             'category_id' => $request->category_id,
             'title'       => $request->title,
+            // Slug opsional tidak diubah saat update agar URL tidak rusak, 
+            // tapi jika ingin diubah bisa tambahkan logika slug di sini.
             'description' => $request->description,
             'date'        => $request->date,
             'location'    => $request->location,
@@ -114,9 +124,6 @@ class EventController extends Controller
         return redirect()->route('admin.events.index')->with('success', 'Data event berhasil diperbarui!');
     }
 
-    /**
-     * Menghapus event dari database beserta berkas posternya.
-     */
     public function destroy($id)
     {
         $event = Event::findOrFail($id);

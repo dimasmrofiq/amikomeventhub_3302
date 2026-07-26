@@ -1,25 +1,40 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Models;
 
-use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Model;
 
-class EventController extends Controller
+class Event extends Model
 {
-    // Menampilkan halaman detail event
-    public function show()
+    // Menggabungkan fillable lama dan atribut baru untuk Fitur 3
+    protected $fillable = [
+        'user_id', 'category_id', 'title', 'slug', 'description', 'date',
+        'location', 'price', 'stock', 'quota', 'poster_path'
+    ];
+
+    public function category() 
     {
-        return view('event-detail');
+        return $this->belongsTo(Category::class);
     }
 
-    // Menampilkan halaman checkout
-    public function checkout()
+    public function reviews()
     {
-        return view('checkout');
+        return $this->hasMany(Review::class);
     }
-    
-    protected $fillable = [
-        'category_id', 'title', 'description', 'date', 
-        'location', 'price', 'stock', 'poster_path'
-    ];
+
+    // Helper untuk menghitung rata-rata rating event
+    public function averageRating()
+    {
+        return round($this->reviews()->avg('rating') ?? 0, 1);
+    }
+
+    // ==========================================
+    // PENAMBAHAN FITUR 3
+    // ==========================================
+
+    // Relasi: Event dimiliki oleh satu Organizer (User)
+    public function organizer()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

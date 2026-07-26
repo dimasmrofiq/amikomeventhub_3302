@@ -16,13 +16,12 @@ class AdminMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-       
-        if (Auth::check() && Auth::user()->role === 'admin') {
-           
+        // Mengizinkan jika user terautentikasi dan memiliki role 'superadmin' atau 'admin'
+        if (Auth::check() && (Auth::user()->role === 'superadmin' || Auth::user()->role === 'admin')) {
             return $next($request);
         }
 
-        // Jika belum login atau bukan admin, tendang/redirect kembali ke halaman login
+        // Jika belum login atau bukan admin/superadmin, kembalikan ke halaman login admin
         return redirect()->route('admin.login')->with('error', 'Anda harus login sebagai Admin untuk mengakses halaman ini.');
     }
 }

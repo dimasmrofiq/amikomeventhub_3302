@@ -47,4 +47,26 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // ==========================================
+    // PENAMBAHAN FITUR 3
+    // ==========================================
+
+    // Relasi: Satu Organisasi/User dapat memiliki banyak Event
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
+
+    // Helper untuk pengecekan role superadmin
+    public function isSuperAdmin()
+    {
+        return $this->role === 'superadmin';
+    }
+
+    // Helper untuk pengecekan role organizer (Superadmin juga dianggap valid)
+    public function isOrganizer()
+    {
+        return $this->role === 'organizer' || $this->role === 'superadmin';
+    }
 }

@@ -36,7 +36,28 @@
             <a href="{{ route('katalog') }}" class="hover:text-indigo-600 transition">Jelajahi</a>
             <a href="{{ route('admin.categories.index') }}" class="hover:text-indigo-600 transition">Kategori</a>
             <a href="{{ route('bantuan') }}" class="hover:text-indigo-600 transition">Bantuan</a>
-            <a href="{{ route('admin.dashboard') }}"class="hover:text-indigo-600 transition" >Panel Admin</a>
+            
+            <!-- TOMBOL LOGIN / PROFIL USER -->
+            @guest
+                <a href="{{ route('login') }}" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-sm rounded-xl hover:bg-indigo-700 transition shadow-lg shadow-indigo-100">
+                    Masuk
+                </a>
+            @endguest
+
+            @auth
+                <div class="flex items-center gap-4">
+                    <span class="text-sm font-bold text-slate-700">
+                        Halo, {{ explode(' ', Auth::user()->name)[0] }}!
+                    </span>
+                    
+                    <form action="{{ route('logout') }}" method="POST" class="m-0 p-0">
+                        @csrf
+                        <button type="submit" class="text-sm font-bold text-red-500 hover:text-red-700 transition">
+                            Keluar
+                        </button>
+                    </form>
+                </div>
+            @endauth
         </div>
         
     </nav>
